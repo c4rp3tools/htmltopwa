@@ -1,5 +1,5 @@
-const CACHE_NAME = 'Htmltopwa-v1';
-const BASE_PATH = '/Htmltopwa/';
+const CACHE_NAME = 'htmltopwa-v1';
+const BASE_PATH = '/htmltopwa/';
 
 const urlsToCache = [
   BASE_PATH,
