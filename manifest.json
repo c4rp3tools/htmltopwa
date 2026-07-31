@@ -1,0 +1,27 @@
+{
+  "name": "PWA Builder Definitivo",
+  "short_name": "PWA Builder ",
+  "description": "Aplicación web progresiva",
+  "start_url": "/Htmltopwa/index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0b1e33",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/Htmltopwa/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/Htmltopwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Htmltopwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

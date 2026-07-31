@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>PWA Builder Definitivo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fb 0%, #e8ecf4 100%);
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+      color: #0b1e33;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 30px 20px 20px;
+    }
+    .header h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0b1e33, #1a3a5c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+    .header p {
+      color: #4a5b6e;
+      font-size: 1.1rem;
+      margin-top: 6px;
+    }
+    .badge-pro {
+      display: inline-block;
+      background: #0b1e33;
+      color: white;
+      padding: 4px 18px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px 22px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: all 0.2s;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .card-title .step {
+      background: #0b1e33;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .upload-area {
+      border: 2.5px dashed #d0d8e0;
+      border-radius: 20px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: #fafcff;
+      position: relative;
+    }
+    .upload-area:hover {
+      border-color: #0b1e33;
+      background: #f5f8ff;
+    }
+    .upload-area.dragover {
+      border-color: #0b1e33;
+      background: #eef4ff;
+      transform: scale(1.01);
+    }
+    .upload-area .icon-big {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+    }
+    .upload-area h3 {
+      font-weight: 600;
+      color: #0b1e33;
+    }
+    .upload-area p {
+      color: #6a7b8e;
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+    .upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .file-info {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #eef4ff;
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+    }
+    .file-info.show {
+      display: flex;
+    }
+    .file-info .name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-info .size {
+      color: #4a5b6e;
+      font-weight: 400;
+      font-size: 0.85rem;
+    }
+    .form-group {
+      margin: 16px 0 12px 0;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="file"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #d8dfe8;
+      border-radius: 40px;
+      font-size: 1rem;
+      background: #fafcff;
+      transition: 0.2s;
+    }
+    .form-group input:focus {
+      outline: 2px solid #0b1e33;
+      outline-offset: 1px;
+      border-color: transparent;
+    }
+    .form-group small {
+      display: block;
+      color: #6a7b8e;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+    .icon-preview {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .icon-preview img {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      border: 1px solid #e6ecf3;
+      object-fit: cover;
+      background: #f8fafc;
+    }
+    .icon-preview .size-label {
+      font-size: 0.75rem;
+      color: #4a5b6e;
+      text-align: center;
+    }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      touch-action: manipulation;
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn-primary {
+      background: #0b1e33;
+      color: white;
+      box-shadow: 0 4px 15px rgba(11,30,51,0.2);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #1a3550;
+      box-shadow: 0 6px 25px rgba(11,30,51,0.3);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-success {
+      background: #1e7b4a;
+      color: white;
+      box-shadow: 0 4px 15px rgba(30,123,74,0.2);
+    }
+    .btn-success:hover {
+      background: #14633b;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #d0d8e0;
+      color: #1a2a3a;
+    }
+    .btn-outline:hover {
+      border-color: #0b1e33;
+      background: #f5f8ff;
+    }
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .download-item {
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: 16px;
+      text-align: center;
+      border: 1px solid #e6ecf3;
+      transition: all 0.2s;
+    }
+    .download-item:hover {
+      border-color: #0b1e33;
+      background: #f5f8ff;
+    }
+    .download-item .filename {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+    .download-item .desc {
+      font-size: 0.75rem;
+      color: #6a7b8e;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-badge.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-badge.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d0d8e0;
+      transition: all 0.3s;
+    }
+    .step-dot.active {
+      background: #0b1e33;
+      width: 30px;
+      border-radius: 10px;
+    }
+    .step-dot.done {
+      background: #1e7b4a;
+    }
+    .preview-section {
+      margin-top: 16px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 1px solid #e6ecf3;
+    }
+    .preview-section iframe {
+      width: 100%;
+      min-height: 300px;
+      border: none;
+      border-radius: 12px;
+      background: white;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0b1e33;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-weight: 500;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast.error {
+      background: #dc2626;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .mt-16 {
+      margin-top: 16px;
+    }
+    .loading-overlay {
+      display: none;
+      text-align: center;
+      padding: 30px 20px;
+    }
+    .loading-overlay.active {
+      display: block;
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #eef2f6;
+      border-top: 4px solid #0b1e33;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .error-message {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 12px 0;
+    }
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      .card {
+        padding: 18px 16px;
+      }
+      .download-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .btn {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🚀 PWA Builder Definitivo</h1>
+    <p>Convierte cualquier HTML en una PWA con logo personalizado</p>
+    <span class="badge-pro">✦ Sube tu HTML, elige tu logo y obtén todo listo</span>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-indicator" id="stepIndicator">
+    <span class="step-dot active" data-step="1"></span>
+    <span class="step-dot" data-step="2"></span>
+    <span class="step-dot" data-step="3"></span>
+    <span class="step-dot" data-step="4"></span>
+  </div>
+
+  <!-- STEP 1: Configuración y subida -->
+  <div class="card" id="step1">
+    <div class="card-title">
+      <span class="step">1</span>
+      Configuración y archivos
+    </div>
+
+    <!-- Nombre del proyecto -->
+    <div class="form-group">
+      <label for="projectName">📁 Nombre del proyecto (ruta personalizada)</label>
+      <input type="text" id="projectName" placeholder="ej: mi-app" value="">
+      <small>Deja en blanco para usar la carpeta actual (<span id="detectedPath">/</span>). Esto definirá la URL base de tu PWA.</small>
+    </div>
+
+    <!-- Subir logo -->
+    <div class="form-group">
+      <label for="iconUpload">🖼️ Sube tu logo (opcional)</label>
+      <input type="file" id="iconUpload" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+      <small>Si no subes imagen, se generarán iconos genéricos con el color de tu app.</small>
+      <div class="icon-preview" id="iconPreview" style="display:none;">
+        <div><img id="preview72" src="" alt="72px"><div class="size-label">72×72</div></div>
+        <div><img id="preview192" src="" alt="192px"><div class="size-label">192×192</div></div>
+        <div><img id="preview512" src="" alt="512px"><div class="size-label">512×512</div></div>
+        <button class="btn btn-danger" id="removeIconBtn" style="padding:6px 16px; font-size:0.8rem;">✕ Quitar</button>
+      </div>
+    </div>
+
+    <!-- Subir HTML -->
+    <div class="upload-area" id="uploadArea">
+      <div class="icon-big">📄</div>
+      <h3>Arrastra o haz clic para subir tu HTML</h3>
+      <p>Sube tu archivo .html y generaremos todo automáticamente</p>
+      <input type="file" id="fileInput" accept=".html,.htm" />
+    </div>
+
+    <div class="file-info" id="fileInfo">
+      <span>📎</span>
+      <span class="name" id="fileName">archivo.html</span>
+      <span class="size" id="fileSize">0 KB</span>
+      <button class="btn btn-outline" id="removeFileBtn" style="padding:4px 12px; font-size:0.8rem;">✕</button>
+    </div>
+
+    <div class="flex-row">
+      <button class="btn btn-primary" id="generateBtn" disabled>⚡ Generar PWA</button>
+      <button class="btn btn-outline" id="previewBtn" disabled>👁️ Vista previa</button>
+    </div>
+
+    <div class="preview-section hidden" id="previewSection">
+      <div class="flex-between" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:600;">Vista previa</span>
+        <button class="btn btn-outline" id="closePreviewBtn" style="padding:4px 16px; font-size:0.8rem;">Cerrar</button>
+      </div>
+      <iframe id="previewFrame" srcdoc=""></iframe>
+    </div>
+  </div>
+
+  <!-- STEP 2: Archivos generados -->
+  <div class="card hidden" id="step2">
+    <div class="card-title">
+      <span class="step">2</span>
+      Archivos generados
+      <span class="status-badge pending" id="generatedStatus">⏳ Generando...</span>
+    </div>
+
+    <div id="generatedContent" style="display:none;">
+      <p style="color:#4a5b6e; margin-bottom:16px;">
+        Descarga cada archivo o todos en un ZIP. Súbelos a tu repositorio de GitHub.
+      </p>
+      <div class="download-grid" id="downloadGrid"></div>
+      <div class="flex-row" style="margin-top:16px;">
+        <button class="btn btn-success" id="downloadAllBtn">📦 Descargar todos (.zip)</button>
+        <button class="btn btn-primary" id="continueToStep3Btn">➡️ Continuar con instrucciones</button>
+      </div>
+    </div>
+
+    <div id="errorContent" style="display:none;">
+      <div class="error-message">
+        <strong>❌ Error al generar los archivos</strong>
+        <p id="errorDetail" style="margin-top:8px;">Ha ocurrido un error inesperado.</p>
+      </div>
+      <button class="btn btn-primary" id="retryGenerateBtn">🔄 Reintentar</button>
+    </div>
+
+    <div class="loading-overlay active" id="loadingOverlay">
+      <div class="spinner"></div>
+      <p style="margin-top:12px; color:#4a5b6e;">Generando archivos...</p>
+    </div>
+  </div>
+
+  <!-- STEP 3: Instrucciones -->
+  <div class="card hidden" id="step3">
+    <div class="card-title">
+      <span class="step">3</span>
+      Publicar en GitHub Pages
+    </div>
+    <div class="instructions" style="background:#f8fafc; border-radius:16px; padding:20px 22px; border-left:4px solid #0b1e33;">
+      <h4 style="margin-bottom:12px;">📋 Pasos para publicar</h4>
+      <ol style="padding-left:22px; margin-top:8px;">
+        <li style="margin-bottom:8px; line-height:1.6;"><strong>Crear repositorio:</strong> Ve a <a href="https://github.com/new" target="_blank">github.com/new</a> y crea un repositorio <strong>público</strong>.</li>
+        <li style="margin-bottom:8px; line-height:1.6;"><strong>Subir archivos:</strong> Sube todos los archivos descargados (index.html, manifest.json, sw.js, iconos).</li>
+        <li style="margin-bottom:8px; line-height:1.6;"><strong>Activar GitHub Pages:</strong> En el repositorio ve a <code>Settings → Pages</code>, selecciona <strong>main</strong> y guarda.</li>
+        <li style="margin-bottom:8px; line-height:1.6;"><strong>Acceder:</strong> Tu app estará en <code id="finalUrlDisplay">https://TU-USUARIO.github.io/NOMBRE-REPO/</code></li>
+      </ol>
+      <div style="margin-top:12px; background:#eef4ff; padding:12px 16px; border-radius:12px;">
+        <strong>💡 Tip:</strong> Si tu repositorio se llama <code id="repoNameDisplay">mi-app</code>, la URL será:<br>
+        <code style="background:#dce3ec; padding:4px 12px; border-radius:6px; display:inline-block; margin-top:4px;" id="finalUrlExample">https://TU-USUARIO.github.io/mi-app/</code>
+      </div>
+      <button class="btn btn-primary mt-16" id="continueToStep4Btn">✅ Ya subí los archivos, continuar</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Listo -->
+  <div class="card hidden" id="step4">
+    <div class="card-title">
+      <span class="step">4</span>
+      🎉 ¡Todo listo!
+    </div>
+    <div style="text-align:center; padding:20px 0;">
+      <div style="font-size:4rem; margin-bottom:12px;">🚀</div>
+      <h3 style="margin-bottom:8px;">Tu PWA está lista para publicar</h3>
+      <p style="color:#4a5b6e; max-width:500px; margin:0 auto;">
+        Ya tienes todos los archivos necesarios. Sigue las instrucciones del paso 3 para publicarla.
+      </p>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:12px;">
+      <button class="btn btn-primary" id="restartBtn">🔄 Generar otra</button>
+      <button class="btn btn-outline" id="backToStep3Btn">⬅️ Volver a instrucciones</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  (function() {
+    'use strict';
+
+    // ---------- DOM references ----------
+    const fileInput = document.getElementById('fileInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const previewSection = document.getElementById('previewSection');
+    const previewFrame = document.getElementById('previewFrame');
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+    const downloadGrid = document.getElementById('downloadGrid');
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    const continueToStep3Btn = document.getElementById('continueToStep3Btn');
+    const continueToStep4Btn = document.getElementById('continueToStep4Btn');
+    const restartBtn = document.getElementById('restartBtn');
+    const backToStep3Btn = document.getElementById('backToStep3Btn');
+    const retryGenerateBtn = document.getElementById('retryGenerateBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const generatedContent = document.getElementById('generatedContent');
+    const errorContent = document.getElementById('errorContent');
+    const errorDetail = document.getElementById('errorDetail');
+    const generatedStatus = document.getElementById('generatedStatus');
+    const toastEl = document.getElementById('toast');
+
+    // Nuevos elementos
+    const projectNameInput = document.getElementById('projectName');
+    const detectedPathSpan = document.getElementById('detectedPath');
+    const iconUpload = document.getElementById('iconUpload');
+    const iconPreview = document.getElementById('iconPreview');
+    const preview72 = document.getElementById('preview72');
+    const preview192 = document.getElementById('preview192');
+    const preview512 = document.getElementById('preview512');
+    const removeIconBtn = document.getElementById('removeIconBtn');
+    const finalUrlDisplay = document.getElementById('finalUrlDisplay');
+    const repoNameDisplay = document.getElementById('repoNameDisplay');
+    const finalUrlExample = document.getElementById('finalUrlExample');
+
+    // Steps
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const step4 = document.getElementById('step4');
+    const stepDots = document.querySelectorAll('.step-dot');
+
+    // ---------- State ----------
+    let uploadedHtml = null;
+    let uploadedFileName = '';
+    let generatedFiles = {};
+    let appName = 'mi-app';
+    let isGenerating = false;
+    let customIconData = null; // objeto con {72: dataURL, 192: dataURL, 512: dataURL}
+
+    // ---------- Detectar carpeta actual ----------
+    function getBasePath() {
+      var path = window.location.pathname;
+      if (path === '/' || path === '') return '/';
+      var parts = path.split('/');
+      var lastPart = parts[parts.length - 1];
+      if (lastPart && lastPart.includes('.')) {
+        parts.pop();
+      }
+      var base = parts.join('/');
+      if (!base.startsWith('/')) base = '/' + base;
+      if (!base.endsWith('/')) base = base + '/';
+      return base;
+    }
+
+    var BASE_PATH = getBasePath();
+    detectedPathSpan.textContent = BASE_PATH;
+
+    // ---------- Toast ----------
+    function showToast(msg, duration, isError) {
+      duration = duration || 2500;
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      if (isError) {
+        toastEl.classList.add('error');
+      } else {
+        toastEl.classList.remove('error');
+      }
+      clearTimeout(toastEl._timeout);
+      toastEl._timeout = setTimeout(function() {
+        toastEl.classList.remove('show');
+      }, duration);
+    }
+
+    // ---------- Step indicator ----------
+    function updateStepIndicator(step) {
+      stepDots.forEach(function(dot, idx) {
+        var num = idx + 1;
+        dot.classList.remove('active', 'done');
+        if (num === step) dot.classList.add('active');
+        else if (num < step) dot.classList.add('done');
+      });
+    }
+
+    function showStep(stepNumber) {
+      [step1, step2, step3, step4].forEach(function(el) {
+        el.classList.add('hidden');
+      });
+      if (stepNumber === 1) step1.classList.remove('hidden');
+      else if (stepNumber === 2) step2.classList.remove('hidden');
+      else if (stepNumber === 3) step3.classList.remove('hidden');
+      else if (stepNumber === 4) step4.classList.remove('hidden');
+      updateStepIndicator(stepNumber);
+      setTimeout(function() {
+        document.querySelector('.container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    // ---------- File handling ----------
+    function handleFile(file) {
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          uploadedHtml = e.target.result;
+          uploadedFileName = file.name;
+          fileName.textContent = file.name;
+          fileSize.textContent = formatSize(file.size);
+          fileInfo.classList.add('show');
+          generateBtn.disabled = false;
+          previewBtn.disabled = false;
+          showToast('✅ Archivo HTML cargado correctamente');
+          previewFrame.srcdoc = uploadedHtml;
+          previewSection.classList.remove('hidden');
+        } catch (error) {
+          showToast('❌ Error al leer el archivo', 3000, true);
+        }
+      };
+      reader.onerror = function() {
+        showToast('❌ Error al leer el archivo', 3000, true);
+      };
+      reader.readAsText(file);
+    }
+
+    function removeFile() {
+      uploadedHtml = null;
+      uploadedFileName = '';
+      fileInfo.classList.remove('show');
+      generateBtn.disabled = true;
+      previewBtn.disabled = true;
+      previewSection.classList.add('hidden');
+      fileInput.value = '';
+      showToast('Archivo removido');
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // ---------- Icon upload ----------
+    function handleIconUpload(file) {
+      if (!file) return;
+      // Mostrar preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          // Redimensionar a 72, 192, 512
+          const sizes = [72, 192, 512];
+          const results = {};
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          sizes.forEach(function(size) {
+            canvas.width = size;
+            canvas.height = size;
+            ctx.clearRect(0, 0, size, size);
+            // Dibujar imagen centrada y escalada para que llene el cuadrado
+            const aspect = img.width / img.height;
+            let drawWidth = size;
+            let drawHeight = size;
+            let offsetX = 0;
+            let offsetY = 0;
+            if (aspect > 1) {
+              drawHeight = size / aspect;
+              offsetY = (size - drawHeight) / 2;
+            } else {
+              drawWidth = size * aspect;
+              offsetX = (size - drawWidth) / 2;
+            }
+            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+            results[size] = canvas.toDataURL('image/png');
+          });
+          customIconData = results;
+          // Mostrar preview
+          preview72.src = results[72];
+          preview192.src = results[192];
+          preview512.src = results[512];
+          iconPreview.style.display = 'flex';
+          showToast('✅ Icono cargado y redimensionado');
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeIcon() {
+      customIconData = null;
+      iconPreview.style.display = 'none';
+      preview72.src = '';
+      preview192.src = '';
+      preview512.src = '';
+      iconUpload.value = '';
+      showToast('Icono removido');
+    }
+
+    // ---------- Extract info from HTML ----------
+    function extractTitle(html) {
+      try {
+        var match = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+        if (match && match[1].trim()) return match[1].trim();
+        var h1Match = html.match(/<h1[^>]*>([^<]*)<\/h1>/i);
+        if (h1Match && h1Match[1].trim()) return h1Match[1].trim().substring(0, 30);
+        return 'mi-app';
+      } catch (e) {
+        return 'mi-app';
+      }
+    }
+
+    function sanitizeName(name) {
+      try {
+        return name.replace(/[^a-z0-9áéíóúñü]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'mi-app';
+      } catch (e) {
+        return 'mi-app';
+      }
+    }
+
+    function getAppColor(html) {
+      try {
+        var match = html.match(/<meta\s+name=["']theme-color["']\s+content=["']([^"']*)["']/i);
+        if (match && match[1]) return match[1];
+        var bgMatch = html.match(/background(?:-color)?\s*:\s*([^;]+)/i);
+        if (bgMatch) {
+          var color = bgMatch[1].trim();
+          if (color.startsWith('#')) return color;
+        }
+        return '#0b1e33';
+      } catch (e) {
+        return '#0b1e33';
+      }
+    }
+
+    // ---------- Generate PWA (VERSIÓN DEFINITIVA) ----------
+    function generatePWA() {
+      if (!uploadedHtml) {
+        showToast('⚠️ Primero sube un archivo HTML', 2000, true);
+        return;
+      }
+      if (isGenerating) return;
+      isGenerating = true;
+
+      // Obtener nombre del proyecto
+      var projectNameRaw = projectNameInput.value.trim();
+      var base = projectNameRaw ? '/' + projectNameRaw + '/' : BASE_PATH;
+      // Si termina en '/', mantener, si no, añadir
+      if (!base.endsWith('/')) base = base + '/';
+
+      appName = projectNameRaw ? sanitizeName(projectNameRaw) : 'mi-app';
+
+      // Resetear UI
+      generatedContent.style.display = 'none';
+      errorContent.style.display = 'none';
+      loadingOverlay.classList.add('active');
+      generatedStatus.className = 'status-badge pending';
+      generatedStatus.textContent = '⏳ Generando...';
+      showStep(2);
+
+      setTimeout(function() {
+        try {
+          var title = extractTitle(uploadedHtml);
+          var color = getAppColor(uploadedHtml);
+
+          // ----- Iconos: usar personalizados o generar genéricos -----
+          var icon72, icon192, icon512;
+          if (customIconData) {
+            icon72 = customIconData[72];
+            icon192 = customIconData[192];
+            icon512 = customIconData[512];
+          } else {
+            // Generar SVG genérico
+            function generateIconSVG(size) {
+              var safeColor = color.startsWith('#') ? color : '#0b1e33';
+              var radius = Math.round(size * 0.2);
+              var fontSize = Math.round(size * 0.4);
+              var yOffset = Math.round(size * 0.1);
+              return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">\n' +
+                '  <rect width="' + size + '" height="' + size + '" rx="' + radius + '" fill="' + safeColor + '"/>\n' +
+                '  <text x="' + (size/2) + '" y="' + (size/2 + yOffset) + '" text-anchor="middle" font-size="' + fontSize + '" fill="white" font-family="system-ui">✦</text>\n' +
+                '</svg>';
+            }
+            function svgToDataUrl(svg) {
+              try {
+                return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+              } catch (e) {
+                return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+              }
+            }
+            icon72 = svgToDataUrl(generateIconSVG(72));
+            icon192 = svgToDataUrl(generateIconSVG(192));
+            icon512 = svgToDataUrl(generateIconSVG(512));
+          }
+
+          // ----- manifest.json -----
+          var manifest = {
+            name: title,
+            short_name: title.substring(0, 12),
+            description: 'Aplicación web progresiva',
+            start_url: base + 'index.html',
+            display: 'standalone',
+            background_color: '#f5f7fb',
+            theme_color: color,
+            orientation: 'portrait',
+            icons: [
+              { src: base + 'icon-72.png', sizes: '72x72', type: 'image/png' },
+              { src: base + 'icon-192.png', sizes: '192x192', type: 'image/png' },
+              { src: base + 'icon-512.png', sizes: '512x512', type: 'image/png' }
+            ]
+          };
+
+          // ----- sw.js -----
+          var swCode = 'const CACHE_NAME = \'' + appName + '-v1\';\n' +
+            'const BASE_PATH = \'' + base + '\';\n\n' +
+            'const urlsToCache = [\n' +
+            '  BASE_PATH,\n' +
+            '  BASE_PATH + \'index.html\',\n' +
+            '  BASE_PATH + \'manifest.json\',\n' +
+            '  BASE_PATH + \'icon-72.png\',\n' +
+            '  BASE_PATH + \'icon-192.png\',\n' +
+            '  BASE_PATH + \'icon-512.png\'\n' +
+            '];\n\n' +
+            'self.addEventListener(\'install\', event => {\n' +
+            '  event.waitUntil(\n' +
+            '    caches.open(CACHE_NAME)\n' +
+            '      .then(cache => {\n' +
+            '        console.log(\'Cache abierto para:\', BASE_PATH);\n' +
+            '        return cache.addAll(urlsToCache);\n' +
+            '      })\n' +
+            '  );\n' +
+            '});\n\n' +
+            'self.addEventListener(\'activate\', event => {\n' +
+            '  event.waitUntil(\n' +
+            '    caches.keys().then(cacheNames => {\n' +
+            '      return Promise.all(\n' +
+            '        cacheNames.map(cacheName => {\n' +
+            '          if (cacheName !== CACHE_NAME) {\n' +
+            '            console.log(\'Eliminando cache antiguo:\', cacheName);\n' +
+            '            return caches.delete(cacheName);\n' +
+            '          }\n' +
+            '        })\n' +
+            '      );\n' +
+            '    })\n' +
+            '  );\n' +
+            '});\n\n' +
+            'self.addEventListener(\'fetch\', event => {\n' +
+            '  var requestUrl = new URL(event.request.url);\n' +
+            '  if (requestUrl.pathname === \'/\' || requestUrl.pathname === \'/index.html\') {\n' +
+            '    event.respondWith(\n' +
+            '      fetch(BASE_PATH + \'index.html\')\n' +
+            '        .catch(function() { return caches.match(BASE_PATH + \'index.html\'); })\n' +
+            '    );\n' +
+            '    return;\n' +
+            '  }\n' +
+            '  event.respondWith(\n' +
+            '    caches.match(event.request)\n' +
+            '      .then(function(response) {\n' +
+            '        return response || fetch(event.request);\n' +
+            '      })\n' +
+            '  );\n' +
+            '});';
+
+          // ----- HTML con PWA integrada -----
+          var pwaHtml = uploadedHtml;
+
+          // Añadir meta tags y manifest si no existen
+          if (!pwaHtml.includes('manifest.json')) {
+            var headClose = '</head>';
+            var manifestTags = '  <link rel="manifest" href="' + base + 'manifest.json">\n' +
+              '  <link rel="apple-touch-icon" href="' + base + 'icon-192.png">\n' +
+              '  <meta name="theme-color" content="' + color + '">\n' +
+              '  <meta name="apple-mobile-web-app-capable" content="yes">\n' +
+              '  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n';
+            pwaHtml = pwaHtml.replace(headClose, manifestTags + headClose);
+          }
+
+          // Registrar Service Worker
+          var swRegister = '\n<script>\n' +
+            'if (\'serviceWorker\' in navigator) {\n' +
+            '  window.addEventListener(\'load\', function() {\n' +
+            '    navigator.serviceWorker.register(\'' + base + 'sw.js\', { scope: \'' + base + '\' })\n' +
+            '      .then(function(registration) {\n' +
+            '        console.log(\'✅ Service Worker registrado con scope:\', registration.scope);\n' +
+            '      })\n' +
+            '      .catch(function(err) {\n' +
+            '        console.log(\'❌ Error al registrar SW:\', err);\n' +
+            '      });\n' +
+            '  });\n' +
+            '}\n' +
+            '<\/script>\n' +
+            '</body>';
+
+          if (!pwaHtml.includes('serviceWorker')) {
+            pwaHtml = pwaHtml.replace('</body>', swRegister);
+          }
+
+          // Guardar archivos generados
+          generatedFiles = {
+            'index.html': pwaHtml,
+            'manifest.json': JSON.stringify(manifest, null, 2),
+            'sw.js': swCode,
+            'icon-72.png': icon72,
+            'icon-192.png': icon192,
+            'icon-512.png': icon512
+          };
+
+          var fileKeys = Object.keys(generatedFiles);
+          if (fileKeys.length < 6) {
+            throw new Error('No se generaron todos los archivos. Generados: ' + fileKeys.length);
+          }
+
+          // Mostrar éxito
+          loadingOverlay.classList.remove('active');
+          generatedContent.style.display = 'block';
+          errorContent.style.display = 'none';
+          generatedStatus.className = 'status-badge success';
+          generatedStatus.textContent = '✅ Listo';
+
+          // Actualizar URLs en instrucciones
+          var repoName = projectNameRaw || 'mi-app';
+          repoNameDisplay.textContent = repoName;
+          finalUrlExample.textContent = 'https://TU-USUARIO.github.io/' + repoName + '/';
+          finalUrlDisplay.textContent = 'https://TU-USUARIO.github.io/' + repoName + '/';
+
+          renderDownloadGrid();
+          showToast('✅ Archivos generados correctamente');
+          isGenerating = false;
+
+        } catch (error) {
+          console.error('Error generando PWA:', error);
+          loadingOverlay.classList.remove('active');
+          generatedContent.style.display = 'none';
+          errorContent.style.display = 'block';
+          errorDetail.textContent = error.message || 'Error desconocido.';
+          generatedStatus.className = 'status-badge error';
+          generatedStatus.textContent = '❌ Error';
+          showToast('❌ Error al generar los archivos', 3000, true);
+          isGenerating = false;
+        }
+      }, 500);
+    }
+
+    // ---------- Render download grid ----------
+    function renderDownloadGrid() {
+      var files = [
+        { name: 'index.html', desc: 'Tu HTML con PWA', icon: '📄' },
+        { name: 'manifest.json', desc: 'Configuración', icon: '⚙️' },
+        { name: 'sw.js', desc: 'Service Worker', icon: '🔧' },
+        { name: 'icon-72.png', desc: 'Icono 72x72', icon: '🖼️' },
+        { name: 'icon-192.png', desc: 'Icono 192x192', icon: '🖼️' },
+        { name: 'icon-512.png', desc: 'Icono 512x512', icon: '🖼️' }
+      ];
+
+      downloadGrid.innerHTML = '';
+      files.forEach(function(f) {
+        var div = document.createElement('div');
+        div.className = 'download-item';
+        div.innerHTML = '' +
+          '<div style="font-size:1.8rem;">' + f.icon + '</div>' +
+          '<div class="filename">' + f.name + '</div>' +
+          '<div class="desc">' + f.desc + '</div>' +
+          '<button class="btn btn-outline" style="margin-top:8px; padding:6px 16px; font-size:0.8rem;" data-download="' + f.name + '">' +
+          '  ⬇️ Descargar' +
+          '</button>';
+        downloadGrid.appendChild(div);
+      });
+
+      downloadGrid.querySelectorAll('[data-download]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var filename = this.dataset.download;
+          downloadFile(filename);
+        });
+      });
+    }
+
+    // ---------- Download individual ----------
+    function downloadFile(filename) {
+      var content = generatedFiles[filename];
+      if (!content) {
+        showToast('⚠️ Archivo no encontrado', 1500, true);
+        return;
+      }
+
+      try {
+        if (filename.endsWith('.png')) {
+          fetch(content).then(function(res) {
+            return res.blob();
+          }).then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('⬇️ Descargado: ' + filename);
+          }).catch(function() {
+            var a = document.createElement('a');
+            a.href = content;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('⬇️ Descargado: ' + filename);
+          });
+          return;
+        }
+
+        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('⬇️ Descargado: ' + filename);
+      } catch (error) {
+        showToast('❌ Error al descargar el archivo', 2000, true);
+      }
+    }
+
+    // ---------- Download all ZIP ----------
+    function downloadAllAsZip() {
+      var fileKeys = Object.keys(generatedFiles);
+      if (fileKeys.length === 0) {
+        showToast('⚠️ Primero genera los archivos', 1500, true);
+        return;
+      }
+
+      if (typeof JSZip === 'undefined') {
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        script.onload = function() {
+          createZipAndDownload();
+        };
+        script.onerror = function() {
+          showToast('❌ Error al cargar la librería ZIP', 3000, true);
+        };
+        document.head.appendChild(script);
+        showToast('⏳ Cargando librería...', 1500);
+        return;
+      }
+      createZipAndDownload();
+    }
+
+    function createZipAndDownload() {
+      try {
+        var zip = new JSZip();
+        var folder = zip.folder(appName);
+
+        var promises = Object.keys(generatedFiles).map(function(filename) {
+          var content = generatedFiles[filename];
+          if (filename.endsWith('.png')) {
+            return fetch(content).then(function(res) {
+              return res.blob();
+            }).then(function(blob) {
+              folder.file(filename, blob);
+            }).catch(function() {
+              try {
+                var blob = dataURLToBlob(content);
+                folder.file(filename, blob);
+              } catch (e) {
+                console.warn('Error con icono:', filename);
+              }
+            });
+          } else {
+            folder.file(filename, content);
+            return Promise.resolve();
+          }
+        });
+
+        showToast('⏳ Preparando descarga...', 1500);
+
+        Promise.all(promises).then(function() {
+          zip.generateAsync({ type: 'blob' }).then(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = appName + '.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('📦 Descargado: ' + appName + '.zip');
+          });
+        }).catch(function() {
+          showToast('⚠️ Error al crear el ZIP, descarga individual disponible', 3000, true);
+        });
+      } catch (error) {
+        showToast('❌ Error al crear el ZIP', 3000, true);
+      }
+    }
+
+    function dataURLToBlob(dataURL) {
+      try {
+        var parts = dataURL.split(',');
+        var mime = parts[0].match(/:(.*?);/)[1];
+        var bstr = atob(parts[1]);
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        for (var i = 0; i < n; i++) {
+          u8arr[i] = bstr.charCodeAt(i);
+        }
+        return new Blob([u8arr], { type: mime });
+      } catch (e) {
+        return new Blob([], { type: 'image/png' });
+      }
+    }
+
+    // ---------- Event listeners ----------
+    // HTML file
+    fileInput.addEventListener('change', function(e) {
+      if (this.files && this.files[0]) {
+        handleFile(this.files[0]);
+      }
+    });
+
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFile(e.dataTransfer.files[0]);
+        fileInput.files = e.dataTransfer.files;
+      }
+    });
+
+    removeFileBtn.addEventListener('click', removeFile);
+    generateBtn.addEventListener('click', generatePWA);
+    retryGenerateBtn.addEventListener('click', generatePWA);
+
+    // Preview
+    previewBtn.addEventListener('click', function() {
+      if (uploadedHtml) {
+        previewFrame.srcdoc = uploadedHtml;
+        previewSection.classList.remove('hidden');
+        previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    closePreviewBtn.addEventListener('click', function() {
+      previewSection.classList.add('hidden');
+    });
+
+    // Icon upload
+    iconUpload.addEventListener('change', function(e) {
+      if (this.files && this.files[0]) {
+        handleIconUpload(this.files[0]);
+      }
+    });
+
+    removeIconBtn.addEventListener('click', removeIcon);
+
+    // Download all
+    downloadAllBtn.addEventListener('click', downloadAllAsZip);
+
+    // Navigation
+    continueToStep3Btn.addEventListener('click', function() {
+      var fileKeys = Object.keys(generatedFiles);
+      if (fileKeys.length === 0) {
+        showToast('⚠️ Primero genera los archivos', 2000, true);
+        return;
+      }
+      showStep(3);
+    });
+
+    continueToStep4Btn.addEventListener('click', function() {
+      showStep(4);
+    });
+
+    backToStep3Btn.addEventListener('click', function() {
+      showStep(3);
+    });
+
+    restartBtn.addEventListener('click', function() {
+      location.reload();
+    });
+
+    // Actualizar detección de ruta al cambiar nombre del proyecto
+    projectNameInput.addEventListener('input', function() {
+      var val = this.value.trim();
+      if (val) {
+        detectedPathSpan.textContent = '/' + val + '/';
+      } else {
+        detectedPathSpan.textContent = BASE_PATH;
+      }
+    });
+
+    // ---------- Initial state ----------
+    showStep(1);
+    showToast('📁 Sube tu HTML y personaliza tu PWA', 3000);
+
+  })();
+</script>
+
+<!-- JSZip para descarga masiva -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+</body>
+</html>
